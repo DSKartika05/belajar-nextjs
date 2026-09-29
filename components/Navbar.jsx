@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "@/context/UserContext";
+import { useFavorites } from "@/context/FavoriteContext";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -13,12 +14,14 @@ const links = [
   { href: "/services", label: "Layanan" },
   { href: "/profile", label: "Profil" },
   { href: "/users", label: "Pengguna" },
+  { href: "/favorites", label: "Favorit" },
   { href: "/contact", label: "Bantuan" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const { name, submitted } = useUser();
+  const { favorites } = useFavorites();
 
   return (
     <header className="sticky top-4 z-50 mx-auto w-full max-w-4xl px-4">
@@ -47,16 +50,21 @@ export default function Navbar() {
                 )}
               >
                 {link.label}
+
+                {link.href === "/favorites" && favorites.length > 0 && (
+                  <span className="ml-1">({favorites.length})</span>
+                )}
               </Link>
             );
           })}
         </div>
+
         {submitted && <span>Hai, {name} 👋</span>}
+
         <Link
           href="/contact"
           className={cn(buttonVariants({ size: "sm" }), "rounded-full")}
         >
-        
           Masuk
         </Link>
       </nav>
