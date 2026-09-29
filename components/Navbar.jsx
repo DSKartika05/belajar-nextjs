@@ -12,6 +12,7 @@ const links = [
   { href: "/about", label: "Tentang" },
   { href: "/services", label: "Layanan" },
   { href: "/profile", label: "Profil" },
+  { href: "/users", label: "Pengguna" },
   { href: "/contact", label: "Bantuan" },
 ];
 
