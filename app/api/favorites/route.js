@@ -1,3 +1,11 @@
+import { getAllFavorites, addFavorite } from "@/lib/services/favoriteService";
+
+export async function GET() {
+  const favorites = getAllFavorites();
+
+  return Response.json(favorites);
+}
+
 export async function POST(request) {
   let body;
 
@@ -13,8 +21,11 @@ export async function POST(request) {
   const result = addFavorite(body);
 
   if (!result.success) {
-    return Response.json({ error: result.error }, { status: result.status });
+    return Response.json(
+      { error: result.error },
+      { status: result.status }
+    );
   }
 
   return Response.json(result.data, { status: result.status });
-}console.log("Hello, World!");
+}
