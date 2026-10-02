@@ -1,29 +1,24 @@
-git st"use client";
+"use client";
 
-import { useFavorites } from "@/context/FavoriteContext";
+import { useFavorite } from "@/context/FavoriteContext";
 import UserCard from "@/components/UserCard";
 
 export default function FavoritesPage() {
-  const { favorites } = useFavorites();
+  const { favorites } = useFavorite();
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-10">
+    <main className="mx-auto max-w-6xl px-6 py-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">
-          Favorit
-        </h1>
-
+        <h1 className="text-3xl font-bold">Favorit</h1>
         <p className="mt-2 text-muted-foreground">
-          {favorites.length === 0
-            ? "Belum ada pengguna yang kamu favoritkan."
-            : `${favorites.length} pengguna ada di daftar favorit kamu.`}
+          Daftar pengguna yang kamu simpan sebagai favorit.
         </p>
       </div>
 
       {favorites.length === 0 ? (
-        <div className="rounded-2xl border border-white/10 bg-foreground/[0.03] p-10 text-center">
+        <div className="rounded-xl border border-dashed p-10 text-center">
           <p className="text-muted-foreground">
-            Belum ada pengguna favorit.
+            Belum ada pengguna yang ditambahkan ke favorit.
           </p>
         </div>
       ) : (

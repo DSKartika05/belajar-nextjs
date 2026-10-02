@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "@/context/UserContext";
-import { useFavorites } from "@/context/FavoriteContext";
+import { useFavorite } from "@/context/FavoriteContext";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -15,13 +15,14 @@ const links = [
   { href: "/profile", label: "Profil" },
   { href: "/users", label: "Pengguna" },
   { href: "/favorites", label: "Favorit" },
+  { href: "/messages", label: "Pesan" },
   { href: "/contact", label: "Bantuan" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const { name, submitted } = useUser();
-  const { favorites } = useFavorites();
+  const { favorites } = useFavorite();
 
   return (
     <header className="sticky top-4 z-50 mx-auto w-full max-w-4xl px-4">
@@ -30,7 +31,7 @@ export default function Navbar() {
           href="/"
           className="shrink-0 text-sm font-bold tracking-tight"
         >
-          <b>PANGANITA</b>
+          <b>Userly</b>
         </Link>
 
         <div className="hidden items-center gap-1 text-sm text-muted-foreground sm:flex">

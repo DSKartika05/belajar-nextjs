@@ -2,63 +2,82 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-const FavoriteContext = createContext();
+const FavoriteContext = createContext(undefined);
 
 export function FavoriteProvider({ children }) {
   const [favorites, setFavorites] = useState([]);
-  const [isHydrated, setIsHydrated] = useState(false);
 
-  // Ambil data favorite dari localStorage saat pertama kali aplikasi dibuka
   useEffect(() => {
-    const savedFavorites = localStorage.getItem("favorites");
-
-    if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites));
-    }
-
-    setIsHydrated(true);
+    fetch("/api/favorites")
+      .then((res) => res.json())
+      .then(setFavorites);
   }, []);
 
-  // Simpan favorite ke localStorage setelah data selesai dibaca
-  useEffect(() => {
-    if (!isHydrated) return;
-
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-  }, [favorites, isHydrated]);
-
-  const toggleFavorite = (user) => {
-    setFavorites((currentFavorites) => {
-      const alreadyFavorite = currentFavorites.some(
-        (favorite) => favorite.id === user.id
-      );
-
-      if (alreadyFavorite) {
-        return currentFavorites.filter(
-          (favorite) => favorite.id !== user.id
-        );
-      }
-
-      return [...currentFavorites, user];
+  async function addFavorite(user) {
+    const res = await fetch("/api/favorites", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(user),
     });
-  };
 
-  const isFavorite = (userId) => {
-    return favorites.some((favorite) => favorite.id === userId);
-  };
+    if (res.ok) {
+      const saved = await res.json();
+      setFavorites((prev) => [...prev, saved]);
+    }
+  }
+
+  async function removeFavorite(userId) {
+    const res = await fetch(`/api/favorites/${userId}`, { method: "DELETE" });
+
+    if (res.ok) {
+      setFavorites((prev) => prev.filter((f) => f.id !== userId));
+    }
+  }
+
+async function updateFavorite(userId, note) {
+  const res = await fetch(`/api/favorites/${userId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ note }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error || "Gagal mengubah favorite");
+  }
+
+  const updated = await res.json();
+
+  setFavorites((prev) =>
+    prev.map((f) => (f.id === userId ? updated : f))
+  );
+
+  return updated;
+}
+
+  function isFavorite(userId) {
+    return favorites.some((f) => f.id === userId);
+  }
+
+  const value = {
+  favorites,
+  addFavorite,
+  removeFavorite,
+  updateFavorite,
+  isFavorite,
+};
 
   return (
-    <FavoriteContext.Provider
-      value={{
-        favorites,
-        toggleFavorite,
-        isFavorite,
-      }}
-    >
+    <FavoriteContext.Provider value={value}>
       {children}
     </FavoriteContext.Provider>
   );
 }
 
-export function useFavorites() {
-  return useContext(FavoriteContext);
+export function useFavorite() {
+  const context = useContext(FavoriteContext);
+  if (context === undefined) {
+    throw new Error("useFavorite harus dipakai di dalam <FavoriteProvider>");
+  }
+  return context;
 }
