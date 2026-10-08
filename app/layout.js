@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
 import { FavoriteProvider } from "@/context/FavoriteContext";
 import { createClient } from "@/lib/supabase/server";
+import { UserProvider } from "@/context/UserContext";
 
 const fontSans = localFont({
   src: [
@@ -42,6 +43,7 @@ export default async function RootLayout({ children }) {
     >
       <body className="flex min-h-screen flex-col bg-background text-foreground antialiased">
         <AuthProvider user={user ? { id: user.id, email: user.email } : null}>
+        <UserProvider>
           <FavoriteProvider>
             <Navbar />
 
@@ -51,6 +53,7 @@ export default async function RootLayout({ children }) {
 
             <Footer />
           </FavoriteProvider>
+        </UserProvider>
         </AuthProvider>
       </body>
     </html>
