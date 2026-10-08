@@ -1,35 +1,24 @@
-import {
-  findAllFavorites,
-  findFavoriteById,
-  insertFavorite,
-  deleteFavoriteById,
-} from "@/lib/repositories/favoriteRepository";
-import { validateFavoriteInput } from "@/lib/validations/favoriteValidation"; // ← baru
+import { getAllFavorites, addFavorite } from "@/lib/services/favoriteService";
 
-export async function getAllFavorites() {
-  return await findAllFavorites();
+export async function GET() {
+  try {
+    return Response.json(await getAllFavorites());
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
 }
 
-export async function addFavorite(body) {
-  const validation = validateFavoriteInput(body);
-  if (!validation.valid) {
-    return { success: false, status: 400, error: validation.error };
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const result = await addFavorite(body);
+
+    if (!result.success) {
+      return Response.json({ error: result.error }, { status: result.status });
+    }
+
+    return Response.json(result.data, { status: result.status });
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
   }
-
-  const alreadyExists = await findFavoriteById(body.user_id); // ← body.id diganti body.user_id
-  if (alreadyExists) {
-    return { success: false, status: 400, error: "User ini sudah difavoritkan" };
-  }
-
-  const saved = await insertFavorite(body);
-  return { success: true, status: 201, data: saved };
-}
-
-export async function removeFavorite(id) {
-  const deleted = await deleteFavoriteById(id);
-  if (!deleted) {
-    return { success: false, status: 404, error: "Data tidak ditemukan" };
-  }
-
-  return { success: true, status: 200, message: "Berhasil dihapus" };
 }
